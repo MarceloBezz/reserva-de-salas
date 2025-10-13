@@ -8,6 +8,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -31,18 +33,29 @@ public class Usuario implements UserDetails{
     private String email;
     private String telefone;
     private String senha;
+    @Enumerated(EnumType.STRING)
     private Roles role;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + role));
     }
+
     @Override
     public String getPassword() {
         return senha;
     }
+
     @Override
     public String getUsername() {
         return email;
+    }
+
+    public Usuario(UsuarioCadastroDTO dto, String senhaCriptografada) {
+        this.email = dto.email();
+        this.senha = senhaCriptografada;
+        this.nome = dto.nome();
+        this.telefone = dto.telefone();
+        this.role = Roles.CLIENTE;
     }
 }
