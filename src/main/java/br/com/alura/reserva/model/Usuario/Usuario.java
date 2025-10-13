@@ -1,5 +1,12 @@
 package br.com.alura.reserva.model.Usuario;
 
+import java.util.Collection;
+import java.util.List;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,7 +23,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Usuario {
+public class Usuario implements UserDetails{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,4 +31,18 @@ public class Usuario {
     private String email;
     private String telefone;
     private String senha;
+    private Roles role;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role));
+    }
+    @Override
+    public String getPassword() {
+        return senha;
+    }
+    @Override
+    public String getUsername() {
+        return email;
+    }
 }
