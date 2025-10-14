@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 import br.com.alura.reserva.infra.exception.RegraDeNegocioException;
 import br.com.alura.reserva.model.Reserva.ReservaDTO;
+import br.com.alura.reserva.model.Reserva.ReservaStatus;
 import br.com.alura.reserva.model.Sala.Sala;
 import br.com.alura.reserva.repository.ReservaRepository;
 
@@ -16,7 +17,7 @@ public class ValidarSalaJaAgendada implements IValidacaoReserva{
 
     @Override
     public void validar(Sala sala, ReservaDTO dto) {
-        if (repository.existsBySalaAndInicioLessThanAndFimGreaterThan(sala, dto.fim(), dto.inicio()))
+        if (repository.existsBySalaAndInicioLessThanAndFimGreaterThanAndStatus(sala, dto.fim(), dto.inicio(), ReservaStatus.ATIVA))
             throw new RegraDeNegocioException("A sala já está reservada neste horário! Favor consultar horários disponíveis");
     }
      
