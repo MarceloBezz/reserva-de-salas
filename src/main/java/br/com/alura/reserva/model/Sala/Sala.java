@@ -24,4 +24,11 @@ public class Sala {
     private String descricao;
     private int capacidade;
     private boolean ativa;
+
+    public Sala(SalaDTO dto) {
+        this.nome = dto.nome();
+        this.descricao = dto.descricao();
+        this.capacidade = dto.capacidade();
+        this.ativa = true;
+    }
 }
