@@ -1,5 +1,7 @@
 package br.com.alura.reserva.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +12,7 @@ import br.com.alura.reserva.model.Sala.Sala;
 import br.com.alura.reserva.model.Usuario.Usuario;
 import br.com.alura.reserva.repository.ReservaRepository;
 import br.com.alura.reserva.repository.SalaRepository;
+import br.com.alura.reserva.validacoes.IValidacaoReserva;
 
 @Service
 public class ReservaService {
@@ -19,19 +22,14 @@ public class ReservaService {
     @Autowired
     private SalaRepository salaRepository;
 
+    @Autowired
+    private List<IValidacaoReserva> validadores;
+
     public void agendarReserva(ReservaDTO dados, Usuario usuario) {
         Sala salaDesejada = salaRepository.findById(dados.salaId())
                 .orElseThrow(() -> new RegraDeNegocioException("Sala não encontrada!"));
 
-        //TODO Deixar essas validações em uma interface de validações separada
-        if (!salaDesejada.isAtiva())
-            throw new RegraDeNegocioException("A sala desejada não está ativa! Favor selecionar outra que esteja");
-        
-        if (repository.existsBySalaAndInicioLessThanAndFimGreaterThan(salaDesejada, dados.fim(), dados.inicio()))
-            throw new RegraDeNegocioException("A sala já está reservada neste horário! Favor consultar horários disponíveis");
-
-        if  (salaDesejada.getCapacidade() < dados.quantidade())
-            throw new RegraDeNegocioException("Capacidade da sala excedida!");
+        validadores.forEach(v -> v.validar(salaDesejada, dados));
         
         Reserva reserva = new Reserva(dados, usuario, salaDesejada);
         repository.save(reserva);
