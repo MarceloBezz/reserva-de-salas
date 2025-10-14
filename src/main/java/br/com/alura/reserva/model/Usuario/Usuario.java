@@ -1,18 +1,20 @@
 package br.com.alura.reserva.model.Usuario;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,7 +27,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Usuario implements UserDetails{
+public class Usuario implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -33,12 +35,14 @@ public class Usuario implements UserDetails{
     private String email;
     private String telefone;
     private String senha;
-    @Enumerated(EnumType.STRING)
-    private Roles role;
+    
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "usuarios_roles", joinColumns = @JoinColumn(name = "usuario_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private List<Roles> roles = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + role));
+        return roles;
     }
 
     @Override
@@ -51,11 +55,11 @@ public class Usuario implements UserDetails{
         return email;
     }
 
-    public Usuario(UsuarioCadastroDTO dto, String senhaCriptografada) {
+    public Usuario(UsuarioCadastroDTO dto, String senhaCriptografada, Roles role) {
         this.email = dto.email();
         this.senha = senhaCriptografada;
         this.nome = dto.nome();
         this.telefone = dto.telefone();
-        this.role = Roles.CLIENTE;
+        this.roles.add(role);
     }
 }
