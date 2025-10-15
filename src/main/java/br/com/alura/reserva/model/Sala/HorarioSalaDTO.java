@@ -1,16 +1,12 @@
-package br.com.alura.reserva.model.Reserva;
+package br.com.alura.reserva.model.Sala;
 
 import java.time.LocalDateTime;
 
-import jakarta.validation.constraints.Positive;
-
-public record ReservaDTO(
+public record HorarioSalaDTO(
     LocalDateTime inicio,
-    LocalDateTime fim,
-    @Positive int quantidade,
-    Long salaId
+    LocalDateTime fim
 ) {
-    public ReservaDTO {
+        public HorarioSalaDTO {
         if (fim.isBefore(inicio) || inicio.isAfter(fim) || inicio.isBefore(LocalDateTime.now()))
             throw new IllegalArgumentException("Horários inválidos!");
         
