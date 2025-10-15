@@ -31,7 +31,7 @@ public class SalaController {
     @PostMapping("/cadastrar")
     public ResponseEntity<String> cadastrarSala(@RequestBody @Valid SalaDTO dados, UriComponentsBuilder uriBuilder) {
         var sala = service.criarSala(dados);
-        URI uri = uriBuilder.path("/buscar/{id}")
+        URI uri = uriBuilder.path("/sala/buscar/{id}")
                 .buildAndExpand(sala.getId())
                 .toUri();
         return ResponseEntity.created(uri).body("Sala criada com sucesso!");

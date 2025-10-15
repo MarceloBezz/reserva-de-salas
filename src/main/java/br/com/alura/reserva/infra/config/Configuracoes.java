@@ -2,6 +2,7 @@ package br.com.alura.reserva.infra.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -27,13 +28,14 @@ public class Configuracoes {
         return http
                 .authorizeHttpRequests(req -> {
                     req.requestMatchers("/cadastrar", "/login").permitAll();
+                    req.requestMatchers(HttpMethod.PATCH, "/sala/desativar/**").hasRole("ADMIN");
                     req.anyRequest().authenticated();
                 })
                 .sessionManagement(sm -> {
                     sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
                 })
                 .addFilterBefore(filtroTokenAcesso, UsernamePasswordAuthenticationFilter.class)
-                .csrf(csrf -> csrf.disable())
+                .csrf(csrf -> csrf.disable()) // O CSRF deve estar desabilitado para funcionamento do JWT
                 .build();
     }
 

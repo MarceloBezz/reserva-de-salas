@@ -30,14 +30,14 @@ public class ReservaService {
     @Autowired
     private List<IValidacaoReserva> validadores;
 
-    public void agendarReserva(ReservaDTO dados, Usuario usuario) {
+    public Reserva agendarReserva(ReservaDTO dados, Usuario usuario) {
         Sala salaDesejada = salaRepository.findById(dados.salaId())
                 .orElseThrow(() -> new RegraDeNegocioException("Sala não encontrada!"));
 
         validadores.forEach(v -> v.validar(salaDesejada, dados));
 
         Reserva reserva = new Reserva(dados, usuario, salaDesejada);
-        repository.save(reserva);
+        return repository.save(reserva);
     }
 
     public DadosReserva buscarReserva(Long idReserva, Usuario usuario) {
